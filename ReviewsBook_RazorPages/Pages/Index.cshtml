@@ -1,0 +1,62 @@
+﻿@page "{handler?}"
+@model IndexModel
+@{
+    ViewData["Title"] = "Reviews";
+}
+
+<div>
+
+    <div id="block-for-add-review" style="display:none;">
+        <h1 style="text-align:center">Залиште свій відгук.</h1>
+        <form asp-action="TryAddReview" asp-controller="Home" method="post">
+            <div style="margin: 5px 10px 5px 10px">
+                <input type="text" name="Login" id="Login" value="${login}" readonly>
+                <br>
+                <textarea style="width:100%;resize:vertical;" name="ReviewText" id="ReviewText" placeholder="Опишіть свої враження тут..." required></textarea>
+                <input type="button" id="btn-add-review" value="Опублікувати">
+            </div>
+        </form>
+    </div>
+    <div id="block-for-reviews" >
+        <table class="widthfull" id="table-reviews">
+            <tbody>
+                @foreach (var item in Model.Reviews)
+                {
+                    var userIds = item.UserId;
+                    <tr>
+                        <td>
+                            @Html.Raw(await Model.GetUserLogin(userIds))
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReviewDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReviewText)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () 
+        {
+            // Если есть id пользователя, то показать блок для ввода отзыва
+            if ($('#label-userid').text() != '') {
+                $('#label-nickname').show();
+                $('#label-fullname').show();
+                $('#block-for-add-review').show();
+            }
+            // Если нет id пользователя, то скрыть блок для ввода отзыва
+            else {
+                $('#label-nickname').hide();
+                $('#label-fullname').hide();
+                $('#block-for-add-review').hide();
+            }
+        });
+    </script>
+}
