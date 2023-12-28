@@ -24,15 +24,15 @@
                 {
                     var userIds = item.UserId;
                     <tr>
-                        <td>
-                            @Html.Raw(await Model.GetUserLogin(userIds))
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ReviewDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ReviewText)
-                        </td>
+                        <th>
+                            <span class="LoginLabel">@Html.Raw(await Model.GetUserLogin(userIds))</span>
+                            <span class="DatetimeLabel">@Html.DisplayFor(modelItem => item.ReviewDate)</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <div class="TextReviewLabel">@Html.DisplayFor(modelItem => item.ReviewText)</div>
+                        </th>
                     </tr>
                 }
             </tbody>
@@ -45,6 +45,7 @@
     <script>
         $(document).ready(function () 
         {
+
             // Если есть id пользователя, то показать блок для ввода отзыва
             if ($('#label-userid').text() != '') {
                 $('#label-nickname').show();
