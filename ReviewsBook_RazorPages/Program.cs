@@ -9,12 +9,19 @@ string? connection = builder.Configuration.GetConnectionString("DefaultConnectio
 
 // добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<ReviewsContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(opt =>
+{
+    opt.IdleTimeout = TimeSpan.FromMinutes(30);
+    opt.Cookie.Name = "Session";
+});
 builder.Services.AddScoped<IReviewsRepository, ReviewsRepository>();
 // Add services to the container.
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
-
+app.UseSession();
+app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapRazorPages();
