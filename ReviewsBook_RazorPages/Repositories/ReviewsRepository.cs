@@ -7,29 +7,30 @@ using System.Text;
 
 namespace ReviewsBook_RazorPages.Repositories
 {
-    public class ReviewsRepository:IReviewsRepository
+    public class ReviewsRepository : IReviewsRepository
     {
         private readonly ReviewsContext _context;
         public ReviewsRepository(ReviewsContext context)
         {
             _context = context;
         }
-        public async Task<List<Review>> GetReviews()
+
+        public async Task<List<UserReviewVM>> GetReviews()
         {
             var col = await _context.Reviews.ToListAsync();
-            //List<Review> res = new();
-            //foreach (var item in col)
-            //{
-            //    var Uuser = await _context.Users.FindAsync(item.UserId);
-            //    UserReviewVM appitem = new()
-            //    {
-            //        UserLogin = Uuser.Login,
-            //        ReviewText = item.ReviewText,
-            //        ReviewDate = item.ReviewDate
-            //    };
-            //    res.Add(appitem);
-            //}
-            return col;
+            List<UserReviewVM> res = new();
+            foreach (var item in col)
+            {
+                var Uuser = await _context.Users.FindAsync(item.UserId);
+                UserReviewVM appitem = new()
+                {
+                    UserLogin = Uuser.Login,
+                    ReviewText = item.ReviewText,
+                    ReviewDate = item.ReviewDate
+                };
+                res.Add(appitem);
+            }
+            return res;
         }
         public async Task<List<User>> GetUsers()
         {
@@ -39,21 +40,21 @@ namespace ReviewsBook_RazorPages.Repositories
         {
             return await _context.Users.FindAsync(id);
         }
-        public async Task CreateReview(Review reviewData)
+        public async Task CreateReview(UserReviewVM reviewVM)
         {
-            var uuser = await _context.Users.FirstOrDefaultAsync(x => x.Id == reviewData.UserId);
+            var uuser = await _context.Users.FirstOrDefaultAsync(x => x.Login == reviewVM.UserLogin);
             Review review = new Review
             {
                 UserId = uuser.Id,
-                ReviewText = reviewData.ReviewText,
-                ReviewDate = DateTime.Now
+                ReviewText = reviewVM.ReviewText,
+                ReviewDate = reviewVM.ReviewDate
             };
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
         }
-        public async Task<bool> TryToRegister(User registerData)
+        public async Task<bool> TryToRegister(RegisterVM registerVM)
         {
-            var IsFinded = await _context.Users.FirstOrDefaultAsync(x => x.Login == registerData.Login);
+            var IsFinded = await _context.Users.FirstOrDefaultAsync(x => x.Login == registerVM.Login);
             // Якщо такого користувача знайдено, значить, такий логін вже зайнято
             if (IsFinded != null)
             {
@@ -63,9 +64,9 @@ namespace ReviewsBook_RazorPages.Repositories
             else
             {
                 User user = new User();
-                user.FirstName = registerData.FirstName;
-                user.LastName = registerData.LastName;
-                user.Login = registerData.Login;
+                user.FirstName = registerVM.FirstName;
+                user.LastName = registerVM.LastName;
+                user.Login = registerVM.Login;
 
                 byte[] saltbuf = new byte[16];
 
@@ -78,7 +79,7 @@ namespace ReviewsBook_RazorPages.Repositories
                 string salt = sb.ToString();
 
                 //переводим пароль в байт-массив  
-                byte[] password = Encoding.Unicode.GetBytes(salt + registerData.Password);
+                byte[] password = Encoding.Unicode.GetBytes(salt + registerVM.Password);
 
                 //создаем объект для получения средств шифрования  
                 var md5 = MD5.Create();
@@ -97,10 +98,10 @@ namespace ReviewsBook_RazorPages.Repositories
                 return true;
             }
         }
-        public async Task<string?> TryToLogin(User loginData)
+        public async Task<int?> TryToLogin(LoginVM loginVM)
         {
             if (_context.Users.Count() == 0) return null;
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Login.Equals(loginData.Login));
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.Login.Equals(loginVM.Login));
             if (user == null)
             {
                 return null;
@@ -110,7 +111,7 @@ namespace ReviewsBook_RazorPages.Repositories
                 string? salt = user.Salt;
 
                 //переводим пароль в байт-массив  
-                byte[] password = Encoding.Unicode.GetBytes(salt + loginData.Password);
+                byte[] password = Encoding.Unicode.GetBytes(salt + loginVM.Password);
 
                 //создаем объект для получения средств шифрования  
                 var md5 = MD5.Create();
@@ -126,7 +127,7 @@ namespace ReviewsBook_RazorPages.Repositories
                 {
                     return null;
                 }
-                return $"{user.Id}";
+                return user.Id;
             }
         }
     }
