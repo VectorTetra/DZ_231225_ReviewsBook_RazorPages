@@ -6,35 +6,43 @@
 
 <div>
 
-    <div id="block-for-add-review" style="display:none;">
+    <div id="block-for-add-review" style="display:none;" class="loginedRefs">
         <h1 style="text-align:center">Залиште свій відгук.</h1>
-        <form asp-action="TryAddReview" asp-controller="Home" method="post">
+        <form method="post">
             <div style="margin: 5px 10px 5px 10px">
-                <input type="text" name="Login" id="Login" value="${login}" readonly>
+                <input asp-for="Login" type="text" name="Login" id="Login" readonly>
+                @* <input type="text" name="Login" id="Login" readonly> *@
                 <br>
-                <textarea style="width:100%;resize:vertical;" name="ReviewText" id="ReviewText" placeholder="Опишіть свої враження тут..." required></textarea>
-                <input type="button" id="btn-add-review" value="Опублікувати">
+                <textarea asp-for="MyReview.ReviewText" style="width:100%;resize:vertical;" name="ReviewText" id="ReviewText" placeholder="Опишіть свої враження тут..." required></textarea>
+                <input type="submit" class="btn btn-primary" id="btn-add-review" value="Опублікувати">
             </div>
         </form>
     </div>
-    <div id="block-for-reviews" >
+    <div id="block-for-reviews">
+        <h1 style="text-align:center">Відгуки користувачів</h1>
         <table class="widthfull" id="table-reviews">
             <tbody>
-                @foreach (var item in Model.Reviews)
+                @if(Model.Reviews.Count == 0)
                 {
-                    var userIds = item.UserId;
-                    <tr>
-                        <th>
-                            <span class="LoginLabel">@Html.Raw(await Model.GetUserLogin(userIds))</span>
-                            <span class="DatetimeLabel">@Html.DisplayFor(modelItem => item.ReviewDate)</span>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <div class="TextReviewLabel">@Html.DisplayFor(modelItem => item.ReviewText)</div>
-                        </th>
-                    </tr>
+                    <span class="NoOneReviewLabel">Поки що немає відгуків</span>
                 }
+                else{
+                    @foreach (var item in Model.Reviews)
+                    {
+                        <tr>
+                            <th>
+                                <span class="LoginLabel">@Html.DisplayFor(modelItem => item.UserLogin)</span>
+                                <span class="DatetimeLabel">@Html.DisplayFor(modelItem => item.ReviewDate)</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="TextReviewLabel">@Html.DisplayFor(modelItem => item.ReviewText)</div>
+                            </th>
+                        </tr>
+                    }
+                }
+                
             </tbody>
 
         </table>
@@ -43,20 +51,34 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () 
-        {
+        $(document).ready(function () {
+            //if ($('#Login').val() != null ) {
+            if (@Model.UserId) {
+        
+                //$('#label-nickname').text(`Html.Encode(Html.DisplayFor(modelItem => modelItem.Login))`);
+                //$('#label-fullname').text(`Html.Encode(Html.DisplayFor(modelItem => modelItem.FirstName)) Html.Encode(Html.DisplayFor(modelItem => modelItem.LastName))`);
+                
+                $('#label-nickname').text(`@Model.Login`);
+                $('#label-fullname').text(`@Html.Raw(Model.FirstName) @Html.Raw(Model.LastName)`);
 
-            // Если есть id пользователя, то показать блок для ввода отзыва
-            if ($('#label-userid').text() != '') {
-                $('#label-nickname').show();
-                $('#label-fullname').show();
-                $('#block-for-add-review').show();
+                //$('#label-nickname').text(Html.Encode(Model.Login));
+                //$('#label-fullname').text(Html.Raw(Html.Encode(Html.Encode(Model.FirstName + Model.LastName))));
+
+                //$('#label-nickname').text(Html.SafeEncodeSvcc());
+                // $('#label-fullname').text(`Html.SafeEncodeSvcc((Model.FirstName) Html.SafeEncodeSvcc(Model.LastName)`);
+        
+                // $('#block-for-add-review').show();
+                $('.loginedRefs').show();
+                $('.unloginedRefs').hide();
             }
             // Если нет id пользователя, то скрыть блок для ввода отзыва
             else {
-                $('#label-nickname').hide();
-                $('#label-fullname').hide();
-                $('#block-for-add-review').hide();
+                // $('#label-nickname').hide();
+                // $('#label-fullname').hide();
+                // $('#block-for-add-review').hide();
+                // $('#ref-logout').hide();
+                $('.loginedRefs').hide();
+                $('.unloginedRefs').show();
             }
         });
     </script>

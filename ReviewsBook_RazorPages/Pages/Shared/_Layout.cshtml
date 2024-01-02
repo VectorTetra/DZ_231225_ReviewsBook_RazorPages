@@ -7,21 +7,19 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/MyStyle.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Reviews_AJAX.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" id="ref-index" name="ref-index">Відгуки</a>
-                <a class="navbar-brand" id="ref-register" name="ref-register">Реєстрація</a>
-                <a class="navbar-brand" id="ref-login" name="ref-login">Увійти</a>
-                
+                <a asp-page="./Index" class="navbar-brand" id="ref-index" name="ref-index">Відгуки</a>
+                <a asp-page="./Register" class="navbar-brand unloginedRefs" id="ref-register" name="ref-register">Реєстрація</a>
+                <a asp-page="./Login" class="navbar-brand unloginedRefs" id="ref-login" name="ref-login">Увійти</a>
 
-                <span id="label-fullname" name="label-fullname"  style="display:none;"></span>
-                <span id="label-nickname" name="label-nickname" style="display:none;"></span>
-                <span id="label-userid" name="label-userid" style="display:none;"></span>
-                <a class="navbar-brand" id="ref-logout" name="ref-logout" style="display:none;">Вийти</a>
+                <span id="label-fullname" name="label-fullname"  style="display:none;" class="loginedRefs"></span>
+                <span id="label-nickname" name="label-nickname" style="display:none;" class="loginedRefs"></span>
+                <span id="label-userid" name="label-userid" style="display:none;" ></span>
+                <a asp-page="./Index" asp-page-handler="Logout" class="navbar-brand loginedRefs" id="ref-logout" name="ref-logout" style="display:none;">Вийти</a>
                 
             </div>
         </nav>

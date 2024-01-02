@@ -21,7 +21,7 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 app.UseSession();
-app.UseAuthorization();
+//app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapRazorPages();
